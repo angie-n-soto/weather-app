@@ -14,8 +14,8 @@ A shareable weather web app that pulls live data from a real weather API and fea
 ## Milestones
 
 ### Phase 1: Setup
-- [ ] Create a GitHub account (if needed) and a repo called `weather-app`
-- [ ] Turn on GitHub Pages so the repo gets a public link
+- [x] Create a GitHub account (if needed) and a repo called `weather-app`
+- [ ] Turn on GitHub Pages so the repo gets a public link (see PUBLISH-TO-GITHUB.md)
 - [ ] Add a "Hello weather" `index.html` and see it live
 
 ### Phase 2: Connect to the API (the core skill)
@@ -42,7 +42,7 @@ A shareable weather web app that pulls live data from a real weather API and fea
 
 ### Phase 5: Ship and showcase
 - [ ] Share the link with friends and collect feedback
-- [ ] Write a README: what it does, tech used, how you collaborated, screenshots
+- [x] Write a README: what it does, tech used, how you collaborated, screenshots
 - [ ] Track remaining ideas as GitHub Issues (that's your project-management evidence)
 
 ## Art requests for your friend

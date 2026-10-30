@@ -40,12 +40,12 @@ Each visitor's own browser asks for the weather directly, so the site has no ser
 3. Right-click `index.html` and choose **Open with Live Server**.
 
 ## Collaboration 🎨
-Character art by **@yurienthu**. This project is a collaboration between a developer and a digital artist. [ART-BRIEF.md](ART-BRIEF.md) is the brief I wrote for the artist, listing each weather pose, the icons and the file specs. The app is set up so new drawings drop right in (`CHIBI_ART` and `ICON_ART` in `app.js`).
+Character art by **@yurienthu**. This project is a collaboration between a developer and a digital artist. [The art brief](docs/ART-BRIEF.md) is what I sent the artist, listing each weather pose, the icons and the file specs. The app is set up so new drawings drop right in (`CHIBI_ART` and `ICON_ART` in `app.js`).
 
 ## Project management
-- [PLAN.md](PLAN.md): milestones and progress checklist
-- [LEARN.md](LEARN.md): notes on how HTML, CSS and JavaScript work together
-- [TEN-DAY-FORECAST-GUIDE.md](TEN-DAY-FORECAST-GUIDE.md): my step-by-step plan for coding the next feature by hand
+- [Project plan](docs/PLAN.md): milestones and progress checklist
+- [Learning notes](docs/LEARN.md): notes on how HTML, CSS and JavaScript work together
+- [10-day forecast plan](docs/TEN-DAY-FORECAST-GUIDE.md): my step-by-step plan for coding the next feature by hand
 
 ## Coming next
 - [ ] 10-day forecast

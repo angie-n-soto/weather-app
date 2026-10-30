@@ -4,9 +4,9 @@ _The drawing request as sent to @yurienthu on Oct 30, 2026._
 
 Helloo thanks so much for drawing for this. 💖 The app shows the weather, and your character reacts to it. Your current drawing already looks great in it!
 
-![The details sheet](screenshots/brief/details-sheet.png)
+![The details sheet](../screenshots/brief/details-sheet.png)
 
-![The app's weather cards](screenshots/brief/app-cards.jpeg)
+![The app's weather cards](../screenshots/brief/app-cards.jpeg)
 
 ## Your character in different weather
 

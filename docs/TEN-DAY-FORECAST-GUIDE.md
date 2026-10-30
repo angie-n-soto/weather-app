@@ -13,6 +13,10 @@ Sun     ⛅   52°   70°
 ...10 days in total
 ```
 
+Here's what the finished version looks like (I built it on a practice copy to test this guide, so I know every step works):
+
+![The finished 10-day forecast](../screenshots/ten-day-goal.png)
+
 **Time:** about 1–2 hours, with breaks.
 
 ---
