@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chibi Weather</title>
+  <!-- Itim: the cute handwritten font for titles and city names -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Magical forest scenery behind everything (styled in style.css) -->
+  <div id="forest" aria-hidden="true">
+    <div class="rays"><span></span><span></span><span></span></div>
+    <div class="far-trees"></div>
+    <div class="trunk left"></div>
+    <div class="trunk right"></div>
+    <div class="canopy"></div>
+    <div class="vines"></div>
+    <div class="ferns"></div>
+    <div class="sparkles"></div>
+    <div class="butterfly one"><img src="art/forest/butterfly.svg" alt=""></div>
+    <div class="butterfly two"><img src="art/forest/butterfly.svg" alt=""></div>
+    <div class="butterfly three"><img src="art/forest/butterfly.svg" alt=""></div>
+  </div>
+
+  <header>
+    <h1>Chibi Weather</h1>
+
+    <!-- Search bar: type a city, then press Enter or "Add" to make a new card -->
+    <div class="toolbar">
+      <form id="add-form" role="search">
+        <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>
+        </svg>
+        <input id="city-input" type="search" placeholder="Search for a city" aria-label="City name" autocomplete="off" required>
+        <button type="submit" class="add-button">Add</button>
+      </form>
+
+      <!-- °F / °C switch, like an iPhone segmented control -->
+      <div class="units" role="group" aria-label="Temperature unit">
+        <button type="button" data-unit="F">°F</button>
+        <button type="button" data-unit="C">°C</button>
+      </div>
+    </div>
+
+    <p id="message" role="status"></p>
+    <p class="hint">Drag a card to move it · Tap a card for details</p>
+  </header>
+
+  <!-- One weather card per place gets added in here by app.js -->
+  <main id="cards"></main>
+
+  <footer>
+    Art by <span id="artist">@yurienthu</span> ·
+    Weather from <a href="https://open-meteo.com/">Open-Meteo</a>
+  </footer>
+
+  <!-- A blueprint for one card. app.js copies it for each city. -->
+  <template id="card-template">
+    <article class="card" tabindex="0">
+      <div class="sky">
+        <div class="sky-fx" aria-hidden="true"></div>
+        <div class="top-row">
+          <span class="place"></span>
+          <button class="remove" aria-label="Remove this city">×</button>
+        </div>
+        <div class="clock"><span class="time">--:--</span> · <span class="date"></span></div>
+        <img class="chibi" src="art/chibi-default.png" alt="Chibi character dressed for the weather">
+        <div class="now">
+          <div class="temp">--°</div>
+          <div class="status">Loading...</div>
+        </div>
+      </div>
+      <div class="bottom">
+        <p class="tip"></p>
+        <div class="stats"></div>
+        <p class="section-label">Today</p>
+        <div class="times"></div>
+      </div>
+    </article>
+  </template>
+
+  <!-- The details pop-up that slides up when you tap a card -->
+  <dialog id="details">
+    <div class="sheet">
+      <div class="sheet-handle" aria-hidden="true"></div>
+      <button class="sheet-close" aria-label="Close details">×</button>
+      <div class="sheet-header">
+        <h2 class="d-place"></h2>
+        <div class="d-temp"></div>
+        <div class="d-status"></div>
+        <div class="d-range"></div>
+      </div>
+      <p class="section-label">Next 24 hours</p>
+      <div class="hourly"></div>
+      <div class="detail-grid"></div>
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>

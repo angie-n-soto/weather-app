@@ -1,0 +1,482 @@
+/* ---------- Colors, fonts and motion live here so they're easy to change ---------- */
+:root {
+  --ink: #1f2a27;          /* main text on the glass */
+  --soft-ink: #5f6f6a;     /* labels */
+  --accent: #2f8a5f;       /* forest green buttons */
+  --glass: rgba(255, 255, 255, 0.72);
+  --glass-line: rgba(255, 255, 255, 0.55);
+  --tile: rgba(255, 255, 255, 0.55);
+  --sunlight: #e9f7a0;     /* the glow coming through the trees */
+  --canopy: #1f6b5c;       /* forest color at the top of the page */
+  --teal: #13564d;         /* middle of the forest */
+  --deep: #082621;         /* darkest forest at the bottom */
+  --glow: #d8ff9e;         /* sparkle color */
+  --leaf-light: #eef5e6;   /* text that sits on the dark forest */
+
+  /* Two fonts: a crisp system font (like iPhone's) for numbers and labels,
+     and cute handwritten Itim for the title, city names and tips */
+  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --font-cute: "Itim", "Comic Sans MS", cursive;
+
+  /* iPhone-style "springy" easing used for every animation */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--deep);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  padding: 28px 16px 140px; /* extra room at the bottom so the ferns show */
+}
+
+button { font: inherit; cursor: pointer; }
+
+/* ---------- Magical forest scenery ---------- */
+/* Layers stack back to front: glow, light rays, faraway trees, big trunks,
+   vines, ferns, then sparkles and butterflies on top. Drawings are in art/forest/ */
+#forest {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 18%, var(--sunlight), transparent 70%),
+    linear-gradient(var(--canopy), var(--teal) 45%, var(--deep));
+}
+#forest > * { position: absolute; }
+
+/* Soft beams of light coming down through the leaves */
+.rays { inset: 0; }
+.rays span {
+  position: absolute;
+  top: -10%;
+  width: 110px;
+  height: 130%;
+  background: linear-gradient(rgba(240, 255, 190, 0.35), transparent 75%);
+  filter: blur(14px);
+  transform-origin: top center;
+  animation: shimmer 7s ease-in-out infinite;
+}
+.rays span:nth-child(1) { left: 38%; transform: rotate(18deg); }
+.rays span:nth-child(2) { left: 50%; transform: rotate(4deg); width: 150px; animation-delay: -2s; }
+.rays span:nth-child(3) { left: 60%; transform: rotate(-14deg); animation-delay: -4s; }
+
+.far-trees {
+  left: 0; right: 0; bottom: 0;
+  height: 80%;
+  background: url("art/forest/far-trees.svg") repeat-x bottom / auto 100%;
+}
+.trunk {
+  top: 0; bottom: 0;
+  width: min(26vw, 280px);
+  background: url("art/forest/trunk.svg") no-repeat center / 100% 100%;
+}
+.trunk.left  { left: 0; }
+.trunk.right { right: 0; transform: scaleX(-1); } /* the same drawing, flipped */
+.canopy {
+  left: -20px; right: -20px; top: 0;
+  height: 110px;
+  background: url("art/forest/canopy.svg") repeat-x top / auto 100%;
+}
+.vines {
+  left: 0; right: 0; top: 40px;
+  height: 240px;
+  background: url("art/forest/vines.svg") repeat-x top / auto 100%;
+  transform-origin: top;
+  animation: sway 8s ease-in-out infinite;
+}
+.ferns {
+  left: -20px; right: -20px; bottom: 0;
+  height: 200px;
+  background: url("art/forest/ferns.svg") repeat-x bottom / auto 100%;
+  animation: rustle 6s ease-in-out infinite;
+}
+
+/* Glowing sparkles that float up (app.js makes them) */
+.sparkles { inset: 0; }
+.sparkle {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--glow);
+  box-shadow: 0 0 8px 2px var(--glow);
+  animation: float-up linear infinite, twinkle 2s ease-in-out infinite;
+}
+
+/* Butterflies: the outside flies around, the picture inside flaps */
+.butterfly { width: 52px; animation: flutter-path 18s ease-in-out infinite; }
+.butterfly img { width: 100%; animation: flap 0.35s ease-in-out infinite alternate; filter: drop-shadow(0 0 6px rgba(255, 200, 120, 0.8)); }
+.butterfly.one   { left: 12%; top: 30%; }
+.butterfly.two   { left: 78%; top: 22%; width: 42px; animation-duration: 22s; animation-delay: -6s; }
+.butterfly.three { left: 60%; top: 65%; width: 36px; animation-duration: 15s; animation-delay: -10s; }
+
+@keyframes shimmer  { 50% { opacity: 0.45; } }
+@keyframes sway     { 50% { transform: rotate(0.6deg) translateX(-6px); } }
+@keyframes rustle   { 50% { transform: translateX(8px); } }
+@keyframes float-up { from { transform: translateY(0); } to { transform: translateY(-70vh); opacity: 0; } }
+@keyframes flap     { to { transform: scaleX(0.25); } }
+@keyframes flutter-path {
+  25% { transform: translate(60px, -40px) rotate(8deg); }
+  50% { transform: translate(120px, 10px) rotate(-6deg); }
+  75% { transform: translate(40px, 50px) rotate(6deg); }
+}
+
+/* ---------- Header: title, search bar, °F/°C switch ---------- */
+header { max-width: 1100px; margin: 0 auto 22px; text-align: center; }
+
+h1 {
+  margin: 0 0 16px;
+  font-family: var(--font-cute);
+  font-weight: 400;
+  font-size: 2.7rem;
+  line-height: 1;
+  color: #f4ffd9;
+  text-shadow: 0 2px 0 #0b3a30, 0 0 14px rgba(216, 255, 158, 0.8); /* dark edge + magical glow */
+}
+
+.toolbar { display: flex; gap: 10px; justify-content: center; max-width: 520px; margin: 0 auto; }
+
+/* Frosted-glass pieces: a see-through white with the forest blurred behind it */
+#add-form, .units {
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+  border-radius: 14px;
+}
+
+#add-form {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 5px 5px 12px;
+  transition: background 0.3s var(--ease);
+}
+#add-form:focus-within { background: rgba(255, 255, 255, 0.26); }
+
+.search-icon { width: 18px; height: 18px; flex: none; fill: none; stroke: rgba(255, 255, 255, 0.8); stroke-width: 2.4; stroke-linecap: round; }
+
+#city-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: white;
+  font: 500 1rem var(--font-ui);
+  padding: 6px 0;
+}
+#city-input::placeholder { color: rgba(255, 255, 255, 0.75); }
+#city-input::-webkit-search-cancel-button { display: none; }
+
+.add-button {
+  border: none;
+  border-radius: 10px;
+  background: white;
+  color: var(--accent);
+  font-weight: 600;
+  padding: 7px 14px;
+  transition: transform 0.2s var(--ease), opacity 0.2s;
+}
+.add-button:active { transform: scale(0.94); }
+
+/* °F / °C segmented control */
+.units { display: flex; padding: 3px; flex: none; }
+.units button {
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 11px;
+  transition: background 0.3s var(--ease), color 0.3s var(--ease);
+}
+.units button.on { background: white; color: var(--ink); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); }
+
+#message { color: #ffd0dc; font-weight: 600; min-height: 1.2em; margin: 10px 0 0; }
+.hint { margin: 2px 0 0; color: rgba(238, 245, 230, 0.85); font-size: 0.85rem; text-shadow: 0 1px 3px rgba(0, 30, 20, 0.6); }
+
+:focus-visible { outline: 3px solid #d8ff9e; outline-offset: 2px; }
+
+/* ---------- The grid of cards ---------- */
+#cards {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 22px;
+  align-items: start;
+}
+
+.card {
+  position: relative;
+  border-radius: 28px;
+  overflow: hidden;
+  background: var(--glass);
+  border: 1px solid var(--glass-line);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  backdrop-filter: blur(24px) saturate(150%);
+  box-shadow: 0 18px 40px rgba(0, 20, 15, 0.35);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
+  animation: rise-in 0.6s var(--ease) backwards;
+  animation-delay: calc(var(--i, 0) * 70ms); /* cards appear one after another */
+}
+.card:hover  { transform: translateY(-4px); box-shadow: 0 26px 50px rgba(0, 20, 15, 0.4); }
+.card:active { transform: scale(0.98); }
+
+/* While dragging: the card lifts up and follows your finger or mouse */
+.card.dragging {
+  z-index: 10;
+  cursor: grabbing;
+  transition: box-shadow 0.25s var(--ease);
+  box-shadow: 0 34px 70px rgba(0, 20, 15, 0.55);
+  animation: none;
+}
+.card.settling { transition: transform 0.35s var(--ease); z-index: 10; }
+
+/* Top half: the colored sky with the character */
+.sky {
+  position: relative;
+  height: 220px;
+  padding: 16px 18px;
+  color: white;
+  text-shadow: 0 1px 3px rgba(20, 30, 50, 0.3);
+  overflow: hidden;
+  transition: background 1s ease;
+}
+
+.top-row { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; }
+.place { font-family: var(--font-cute); font-weight: 400; font-size: 1.45rem; line-height: 1; }
+
+.remove {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: white;
+  font-size: 1.1rem;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.card:hover .remove, .card:focus-within .remove { opacity: 1; }
+.remove:active { transform: scale(0.9); }
+@media (hover: none) { .remove { opacity: 1; } } /* phones: always show it */
+.card.here .remove { display: none; } /* can't remove "your location" */
+
+.clock { position: relative; z-index: 2; margin-top: 6px; font-size: 0.85rem; font-weight: 500; opacity: 0.92; }
+
+.now { position: absolute; z-index: 2; left: 18px; bottom: 16px; }
+.temp { font-size: 4.2rem; font-weight: 200; line-height: 1; letter-spacing: -2px; }
+.status { font-weight: 600; font-size: 0.95rem; }
+
+.chibi {
+  position: absolute;
+  z-index: 1;
+  right: 6px;
+  bottom: -6px;
+  height: 190px;
+  pointer-events: none;
+  animation: bob 2.5s ease-in-out infinite;
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.2));
+}
+
+/* Bottom half: frosted glass with the tip, stats and time-of-day tiles */
+.bottom { padding: 14px 16px 18px; }
+.tip { margin: 0 0 12px; font-family: var(--font-cute); font-weight: 400; font-size: 1.2rem; text-align: center; }
+
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; text-align: center; }
+.stats div { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--soft-ink); }
+.stats b { display: block; color: var(--ink); font-size: 1.05rem; font-weight: 600; letter-spacing: 0; text-transform: none; font-variant-numeric: tabular-nums; }
+
+.section-label {
+  margin: 16px 0 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--soft-ink);
+}
+
+.times { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.tile {
+  border-radius: 16px;
+  padding: 8px 2px 8px;
+  text-align: center;
+  background: var(--tile);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+.tile .label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--ink); }
+.tile .hour  { display: block; font-size: 0.68rem; color: var(--soft-ink); }
+.tile .icon  { font-size: 1.7rem; line-height: 1.25; height: 2.2rem; }
+.tile .icon img { height: 100%; width: auto; } /* drawn icons are the same size as the emoji */
+.tile b { display: block; font-size: 1rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+footer { text-align: center; margin-top: 30px; font-size: 0.9rem; color: var(--leaf-light); }
+footer a { color: inherit; }
+#artist { font-weight: 700; }
+
+/* ---------- Details sheet (slides up when you tap a card) ---------- */
+#details {
+  width: min(560px, 100%);
+  max-height: 88vh;
+  margin: auto auto 0;            /* sits at the bottom, like an iPhone sheet */
+  padding: 0;
+  border: none;
+  border-radius: 28px 28px 0 0;
+  background: transparent;
+  color: var(--ink);
+  overflow: visible;
+}
+@media (min-width: 700px) { #details { margin: auto; border-radius: 28px; } }
+#details::backdrop { background: rgba(5, 20, 16, 0.45); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+#details[open] { animation: sheet-up 0.45s var(--ease); }
+#details[open]::backdrop { animation: fade-in 0.3s ease; }
+
+.sheet {
+  position: relative;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 10px 20px 28px;
+  border-radius: inherit;
+  background: rgba(250, 255, 250, 0.86);
+  -webkit-backdrop-filter: blur(30px) saturate(160%);
+  backdrop-filter: blur(30px) saturate(160%);
+  border: 1px solid var(--glass-line);
+}
+.sheet-handle { width: 40px; height: 5px; border-radius: 3px; background: rgba(0, 0, 0, 0.18); margin: 0 auto 8px; }
+.sheet-close {
+  position: absolute; top: 14px; right: 14px;
+  width: 32px; height: 32px; border: none; border-radius: 50%;
+  background: rgba(0, 0, 0, 0.08); color: var(--ink); font-size: 1.2rem; line-height: 1;
+}
+.sheet-header { text-align: center; padding: 6px 0 4px; }
+.d-place { margin: 0; font-family: var(--font-cute); font-weight: 400; font-size: 1.9rem; line-height: 1.1; }
+.d-temp { font-size: 4.5rem; font-weight: 200; line-height: 1; letter-spacing: -2px; }
+.d-status { font-weight: 600; }
+.d-range { color: var(--soft-ink); font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+
+.hourly {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 10px 6px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.7);
+  scroll-snap-type: x proximity;
+}
+.hour-item { flex: none; width: 54px; text-align: center; scroll-snap-align: start; font-variant-numeric: tabular-nums; }
+.hour-item small { display: block; font-size: 0.72rem; font-weight: 600; color: var(--soft-ink); }
+.hour-item .icon { font-size: 1.5rem; height: 2rem; line-height: 1.4; }
+.hour-item .icon img { height: 100%; }
+.hour-item .rain { font-size: 0.68rem; color: #2b7fbf; font-weight: 600; min-height: 1em; }
+.hour-item b { font-weight: 600; }
+
+.detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 12px; }
+.detail {
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.7);
+}
+.detail small { display: block; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--soft-ink); }
+.detail b { display: block; font-size: 1.6rem; font-weight: 500; margin: 2px 0; font-variant-numeric: tabular-nums; }
+.detail span { font-size: 0.82rem; color: var(--soft-ink); }
+
+/* ---------- Moods: each weather type gets its own sky ---------- */
+.mood-sunny  .sky { background: linear-gradient(160deg, #4fa6e6, #8fd0f5); }
+.mood-cloudy .sky { background: linear-gradient(160deg, #8a9fba, #c0cee0); }
+.mood-rainy  .sky { background: linear-gradient(160deg, #5d7398, #8fa2c2); }
+.mood-snowy  .sky { background: linear-gradient(160deg, #7f9fc6, #b7cde6); }
+.mood-stormy .sky { background: linear-gradient(160deg, #262842, #4a4b6c); }
+.mood-foggy  .sky { background: linear-gradient(160deg, #9c9ca6, #cfcdd4); }
+.mood-night  .sky { background: linear-gradient(160deg, #1d2148, #4b3a6b); }
+.loading     .sky { background: linear-gradient(160deg, #6f9c8c, #a9c9b8); }
+
+/* Character reactions per mood */
+.mood-sunny  .chibi { animation: hop 1.2s ease-in-out infinite; }
+.mood-snowy  .chibi { animation: shiver 0.25s linear infinite; }
+.mood-stormy .chibi { animation: shiver 0.4s linear infinite; }
+.mood-night  .chibi { animation: bob 4s ease-in-out infinite; filter: brightness(0.85); }
+
+/* ---------- Sky effects (made by app.js, inside each card) ---------- */
+.sky-fx { position: absolute; inset: 0; pointer-events: none; }
+
+.raindrop, .snowflake { position: absolute; top: -20px; animation: fall linear infinite; }
+.raindrop  { width: 2px; height: 14px; background: rgba(255, 255, 255, 0.7); }
+.snowflake { color: white; font-size: 0.9rem; }
+.cloud     { position: absolute; font-size: 2.6rem; opacity: 0.85; animation: drift linear infinite; }
+.star      { position: absolute; color: #fff6c9; font-size: 0.7rem; animation: twinkle 2s ease-in-out infinite; }
+.sun       { position: absolute; top: 14px; left: 45%; font-size: 3rem; animation: spin 20s linear infinite; }
+.storm-cloud {
+  position: absolute;
+  top: -18px;
+  width: 190px;
+  height: 86px;
+  background: url("art/weather/storm-cloud.svg") no-repeat center / contain;
+  opacity: 0.9;
+  animation: roll 7s ease-in-out infinite alternate;
+}
+.raindrop.heavy { width: 2px; height: 20px; background: rgba(220, 230, 255, 0.75); rotate: 12deg; animation-name: fall-slant; } /* slanted by the wind */
+
+/* Lightning: a glow that lights up the sky around the bolt, plus the bolt itself */
+.flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--x, 40%) 25%, rgba(255, 255, 255, 0.85), rgba(190, 200, 255, 0.35) 40%, transparent 75%);
+  opacity: 0;
+  animation: lightning 6s infinite;
+}
+.bolt {
+  position: absolute;
+  top: 0;
+  height: 70%;
+  translate: -50% 0;
+  opacity: 0;
+  filter: drop-shadow(0 0 8px rgba(220, 230, 255, 0.9));
+  animation: lightning 6s infinite;
+}
+
+/* ---------- Keyframe animations ---------- */
+@keyframes bob     { 50% { transform: translateY(-6px); } }
+@keyframes hop {
+  0%, 100% { transform: translateY(0) scale(1, 1); }
+  40%      { transform: translateY(-12px) scale(0.98, 1.03); }
+  80%      { transform: translateY(0) scale(1.03, 0.97); }
+}
+@keyframes shiver  { 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
+@keyframes fall    { to { transform: translateY(270px); } }
+@keyframes roll    { to { transform: translateX(30px); } }
+@keyframes fall-slant { to { transform: translate(-58px, 270px); } }
+@keyframes drift   { from { transform: translateX(-80px); } to { transform: translateX(420px); } }
+@keyframes twinkle { 50% { opacity: 0.2; } }
+@keyframes spin    { to { transform: rotate(360deg); } }
+@keyframes rise-in { from { opacity: 0; transform: translateY(24px) scale(0.97); } }
+@keyframes sheet-up { from { transform: translateY(60px); opacity: 0; } }
+@keyframes fade-in { from { opacity: 0; } }
+/* Dark most of the time, then a quick double flicker like real lightning */
+@keyframes lightning {
+  0%, 86%, 100% { opacity: 0; }
+  87%           { opacity: 1; }
+  89%           { opacity: 0.2; }
+  91%           { opacity: 0.9; }
+  95%           { opacity: 0; }
+}
+
+/* Respect people who turn off animations in their device settings */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
